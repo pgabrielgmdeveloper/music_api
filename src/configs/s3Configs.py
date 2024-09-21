@@ -15,13 +15,15 @@ class S3Client:
             self._client = await self.__session.client('s3', region_name=self._region).__aenter__()
         return
 
+
     async def put(self, file, object_name: str):
         await self._create_client()
         try:
             # Verifique se `file.file` é um objeto semelhante a um arquivo
-            await self._client.upload_fileobj(file.file, settings.bucket_name, object_name)
+            await self._client.upload_fileobj(file, settings.bucket_name, object_name)
         except Exception as e:
             print(f"Error uploading file: {e}")
+
 
     async def get_objects(self, key: str):
         await self._create_client()

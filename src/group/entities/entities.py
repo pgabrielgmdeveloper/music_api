@@ -4,6 +4,6 @@ from src.configs.database import Base
 
 
 class Group(Base):
-    __tablename__ = 'group_t'
+    __tablename__ = 'group'
     id = Column(Integer,primary_key=True, autoincrement=True)
     group_name = Column(TEXT)

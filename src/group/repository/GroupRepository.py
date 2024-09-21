@@ -22,4 +22,6 @@ class GroupRepository:
         result = await self._session.execute(sa.select(Group))
         return result.scalars().all()
             
-        
+    async def get_by_id(self, id: int):
+        result = await self._session.execute(sa.select(Group).where(Group.id == id))
+        return result.scalar_one()

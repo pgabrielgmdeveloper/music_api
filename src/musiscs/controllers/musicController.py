@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import Dict, List
 from fastapi import APIRouter, Response, UploadFile, File
 from fastapi.params import Form 
@@ -20,7 +21,8 @@ async def create_music(session = Depends(get_session),file: UploadFile = File(..
     music = CreateMusic(**json.loads(music_json))
     repository = MusicRepository(session=session)
     s3 = S3Client()
-    await s3.put(file, object_name=music.name + ".mp3", file_content=content)
+    await repository.createMusic(Music(**music.model_dump()))
+    await s3.put(BytesIO(content), object_name=music.name + ".mp3")
     return JSONResponse(status_code=201, content={"status":"created"})
 
 @router.get("/get-musics")
@@ -36,6 +38,6 @@ async def get_musics_play(music_ids: List[int],session = Depends(get_session)):
     s3 = S3Client()
     
     musics: List[MusicResponse] = [MusicResponse(**(to_dict(await repository.get_by_id(id)))) for id in music_ids]
-    musics_play = [MusicPlayResponse(**music.model_dump(), URI = await s3.get_objects(music.name)) for music in musics]
+    
     return {"data": musics_play}
     
